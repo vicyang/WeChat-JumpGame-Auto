@@ -1,11 +1,11 @@
-# WeChat-JumpGame-AutoScript
-WeChat-JumpGame-AutoScript
+# WeChat-JumpGame-Auto
+微信小游戏 - 跳一跳 按键精灵脚本
 
-* ### 环境
-  需要安装按键精灵手机版
-  仅在 魅族 MX5 上面测试过
+* ### 环境  
+  需要安装按键精灵手机版  
+  仅在 魅族 MX5 上面测试过  
 
-* ### 当前进度
-  跳十几步就挂了 :smile:
+* ### 当前进度  
+  跳十几步就挂了 :smile:  
   
 
