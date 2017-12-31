@@ -1,5 +1,5 @@
-# WeChat-JumpGame-Auto
-微信小游戏 - 跳一跳 按键精灵脚本
+# WeChat-JumpGame-Auto  
+微信小游戏 - 跳一跳 按键精灵脚本  
 
 * ### 环境  
   需要安装按键精灵手机版  
