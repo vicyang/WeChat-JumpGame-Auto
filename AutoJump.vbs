@@ -1,10 +1,8 @@
 //v0.1
-//未考虑背景过渡色问题
+//考虑背景过渡色问题
 //未考虑 block 内花纹
 
 Delay 1000
-'Touch 500, 500, 1000
-
 Dim maxlen
 Dim x1,y1, x2,y2
 
@@ -24,7 +22,7 @@ For iter = 1 To 50
 	If body = 1 Then
 		say "From: " & x1 & "," & y1
 		Delay 500
-		head = get_headline(bgcolor)
+		head = get_headline()
 		say "heady = " & head
 		If head < 0 
 			Exit For
@@ -54,16 +52,19 @@ For iter = 1 To 50
 Next
 
 
-Function get_headline(color)
+Function get_headline()
 	Dim execute
 	Dim cmp
+	Dim color
 	
-	For y = 600 to 900 Step 10	
+	For y = 500 To 900 Step 10
+		color = GetPixelColor(5, y)
+		say "bgcolor: "& color
 		execute = ""
 		For x = 1 To screenX Step 10
     		execute = execute & x & "|" & y & "|" & color & ","
 		Next
-		cmp = CmpColorEx(execute, 0.95)
+		cmp = CmpColorEx(execute, 0.9)
 		//出现不匹配情况时返回 0
 		If cmp = 0 Then 
 			get_headline = y
@@ -112,27 +113,6 @@ Function get_bottomline( centx, head )
 	
 End Function
 
-Sub compare(color)
-    Dim cmp
-    //For vt = 300 To 800 Step 10
-    For vt = 600 To 800 Step 10
-        For hz = 1 To screenX Step 50
-            cmp = CmpColor(hz, vt, color, 0.95)
-            If cmp = -1 Then 
-                Exit For
-            End If
-        Next
-	
-        If cmp = -1 Then 
-            Exit For
-        End If
-		
-        say "y: " & vt & ", Result: " & cmp
-        Touch 800, vt, 100
-        Delay 500
-    Next
-End Sub
-
 Function findbody()
     Dim times = 0
     Dim result = -1
@@ -157,37 +137,12 @@ Function findbody()
 	
 End Function
 
-
-Function findblock()
-    Dim times  = 0
-    Dim result = -1
-	
-    While ( result = -1 )
-        FindPic 0,0,0,0,"Attachment:block_green1.png","000000", 3, 0.8, x2, y2
-        If x2 > -1 And y2 > -1 Then
-            say x2 & ", " & y2
-            result = 1
-        End If
-		
-        If times >= 30 Then
-            result = 0
-        End If
-	
-        times = times + 1
-        Delay 300
-        say "find block again, times: " & times
-    Wend
-    findblock = result
-	
-End Function
-
 Sub press(delta)
     Dim hold
     hold = Int(delta / maxlen * 2000)
     say "Delta: " & int(delta) & ", Delay: " & hold
     Touch x1+200, y1+100, hold
 End Sub
-
 
 Function distance(x1, y1, x2, y2)
 	distance = sqr( (x1-x2)^2 + (y1-y2)^2 )
