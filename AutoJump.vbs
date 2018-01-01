@@ -20,7 +20,7 @@ screenX = GetScreenX()
 screenY = GetScreenY()
 maxlen = sqr( screenX^2 + screenX^2 )
 
-Dim bgcolor, prev, curr
+Dim bgcolor, iter
 Dim head, bottom, centx, centy, dist
 
 Dim body
@@ -29,7 +29,9 @@ Dim changed
 While (1)
 	bgcolor = GetPixelColor(100, 360)
 	body = findbody()
-	If body = 1 Then
+	
+	If body = 1 Then 
+		iter = iter + 1
 		say "From: " & x1 & "," & y1
 		
 		If check_bgcolor_change(bgcolor) = 1 Then 
@@ -39,7 +41,7 @@ While (1)
 		head = get_headline( x1 )
 		say "heady = " & head
 		If head < 0 
-			Exit For
+			Exit While
 		End If
 		
 		centx = get_centx( head, x1 )
@@ -65,7 +67,7 @@ While (1)
 	
 	TracePrint "Step: " & iter
 	TracePrint ""
-End While
+Wend
 
 Function get_headline( body_x )
 	Dim execute
