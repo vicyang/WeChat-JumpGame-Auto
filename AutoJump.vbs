@@ -46,7 +46,7 @@ While (1)
 		say "centx = " & centx
 		
 		If centx < 0 Then 
-			Exit For
+			Exit While
 		End If
 		
 		bottom = get_bottomline( centx, head )
