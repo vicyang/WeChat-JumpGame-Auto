@@ -5,7 +5,11 @@
 //v1.0
 //在遇到 CD block 的时候会有音乐符号上浮对扫描线造成干扰 - 判断body在屏幕左边还是右边，仅扫描另一半屏幕
 //block 中间的圆点判断
-//有些阶段，背景色动态变化造成干扰
+//有时候背景色突然改变，作定点判断
+
+//v1.1
+//提高 block 边界的精确度
+
 
 Delay 1000
 Dim maxlen
@@ -19,11 +23,10 @@ maxlen = sqr( screenX^2 + screenX^2 )
 Dim bgcolor, prev, curr
 Dim head, bottom, centx, centy, dist
 
-
 Dim body
 Dim changed
 
-For iter = 1 To 50
+While (1)
 	bgcolor = GetPixelColor(100, 360)
 	body = findbody()
 	If body = 1 Then
@@ -54,15 +57,15 @@ For iter = 1 To 50
 		say "dist: " & dist
 		press (dist)
 		//press (Abs(y2 - y1))
-	Else 
-		Exit For
+	Else
+		Exit While
 	End If
 	
 	Delay 2500
 	
 	TracePrint "Step: " & iter
 	TracePrint ""
-Next
+End While
 
 Function get_headline( body_x )
 	Dim execute
@@ -81,15 +84,24 @@ Function get_headline( body_x )
 		TracePrint "test right side"
 	End If
 	
-	For y = 500 To 900 Step 10
+	For y = 500 To 1000 Step 10
 		color = GetPixelColor( xleft, y )
 		//say "bgcolor: "& color
 		
 		num = GetColorNum(xleft, y, xright, y, color, 0.95)
 		
 		//如果相同颜色的数量比预像素计少20
-		If num < ( halfx - 20 ) Then 
+		If num < (halfx - 20) Then
 			get_headline = y
+			
+			//精确扫描
+			For yy = (y - 10) To y Step 2
+				num = GetColorNum(xleft, yy, xright, yy, color, 0.95)
+				If num < (halfx - 20) Then 
+					get_headline = yy
+					Exit For
+				End If
+			Next
 			Exit For
 		End If
 		
@@ -144,9 +156,18 @@ Function get_bottomline( centx, head )
 		If cmp = -1 Then 
 			white = CmpColor( centx, y, "FFFFFF", 0.9 )
 			//如果不是白色
-			
-			If white = -1 Then 
+			If white = -1 Then
 				get_bottomline = y
+				
+				//精确搜索
+				For yy = (y - 10) To y Step 2
+					cmp = CmpColor(centx, yy, color, 0.95)
+					If cmp = -1 Then 
+						get_bottomline = yy
+						Exit For
+					End If
+				Next
+				
 				Exit For
 			End If
 		End If
@@ -172,8 +193,8 @@ Function findbody()
     While ( result = -1 )
         FindPic 0,0,0,0,"Attachment:body.png","000000", 3, 0.95, x1, y1
         If x1 > -1 And y1 > -1 Then 
-            x1 = x1 + 25
-            y1 = y1 + 47
+            x1 = x1 + 30
+            y1 = y1 + 30
             result = 1
         End If
 		
@@ -191,9 +212,9 @@ End Function
 
 Sub press(delta)
     Dim hold
-    hold = Int(delta / maxlen * 2100)
+    hold = Int(delta / maxlen * 2000)
     say "Delta: " & int(delta) & ", Delay: " & hold
-    Touch x1+200, y1+100, hold
+    Touch x1, centy, hold
 End Sub
 
 Function distance(x1, y1, x2, y2)
