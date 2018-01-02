@@ -1,19 +1,6 @@
-//v0.1
-//¿¼ÂÇ±³¾°¹ı¶ÉÉ«ÎÊÌâ
-//Î´¿¼ÂÇ block ÄÚ»¨ÎÆ
-
-//v1.0
-//ÔÚÓöµ½ CD block µÄÊ±ºò»áÓĞÒôÀÖ·ûºÅÉÏ¸¡¶ÔÉ¨ÃèÏßÔì³É¸ÉÈÅ - ÅĞ¶ÏbodyÔÚÆÁÄ»×ó±ß»¹ÊÇÓÒ±ß£¬½öÉ¨ÃèÁíÒ»°ëÆÁÄ»
-//block ÖĞ¼äµÄÔ²µãÅĞ¶Ï
-//ÓĞÊ±ºò±³¾°É«Í»È»¸Ä±ä£¬×÷¶¨µãÅĞ¶Ï
-
-//v1.1
-//Ìá¸ß block ±ß½çµÄ¾«È·¶È
-
-//v1.2
-//´¦Àíbody¹ıÓÚ½Ó½üblock£¨¿¿½üÖĞ¼äÏß£©µÄÇé¿ö
-//Ä¿±êÖĞ¼äµã·½°¸ĞŞ¸Ä
-//°×É« block bottom line ÅĞ¶ÏĞŞ¸Ä
+// ä½œè€…ï¼š523066680 / vicyang
+// https://github.com/vicyang/WeChat-JumpGame-Auto
+// 2018-01-02
 
 Delay 1000
 Dim x1,y1, x2,y2
@@ -25,7 +12,7 @@ screenY = GetScreenY()
 Dim bgcolor, iter
 Dim head, bottom, centx, centy, dist
 
-// ÉÏÒ»´ÎµÄ body ×ø±ê, ´¥ÆÁÊ±¼ä, ³õÊ¼Ê±¼äÂÊ
+// ä¸Šä¸€æ¬¡çš„ body åæ ‡, è§¦å±æ—¶é—´, åˆå§‹æ—¶é—´ç‡
 Dim prevx, prevy, lastpress, timerate
 Dim body
 Dim changed
@@ -34,214 +21,214 @@ Dim changed
 timerate = 1.31
 
 While (1)
-	bgcolor = GetPixelColor(100, 360)
-	body = findbody()
-	
-	If body = 1 Then 
-		iter = iter + 1
-		say "From: " & x1 & "," & y1
-		
-		If check_bgcolor_change(bgcolor) = 1 Then 
-			bgcolor = GetPixelColor(100, 360)
-		End If
-		
-		KeepCapture()
-		head = get_headline( x1 )
-		If head < 0 
-			Exit While
-		End If
-		say "top = " & head
-		
-		centx = get_centx( head, x1 )
-		If centx < 0 Then 
-			Exit While
-		End If
-		say "centx = " & centx
-		
-		bottom = get_bottomline( centx, head )
-		centy = (head+bottom)/2
-		say "bottom = " & bottom
-	
-		//Ä§¸Ä£¬Èç¹ûÓöµ½¸ÉÈÅµ¼ÖÂÄ¿±êµã¹ıÓÚ½Ó½ü±ß½ç£¬Ôòy+20
-		If (centy - head) < 20 Then 
-			say "Too close, y + 50"
-			centy = head + 50
-		End If
-		
-		dist = distance(x1, y1, centx, centy)
-		say "from: " & x1 & ", " & y1 & " to: " & centx & ", " & centy
-		
-		ReleaseCapture()
-		SnapShot ("/sdcard/Pictures/autojump.png")
-		lastpress = press (dist)
-	Else
-		Exit While
-	End If
-	
-	Delay 2000
-	
-	TracePrint "Step: " & iter
-	TracePrint ""
-	prevx = x1
-	prevy = y1
+    bgcolor = GetPixelColor(100, 360)
+    body = findbody()
+    
+    If body = 1 Then 
+        iter = iter + 1
+        say "From: " & x1 & "," & y1
+        
+        If check_bgcolor_change(bgcolor) = 1 Then 
+            bgcolor = GetPixelColor(100, 360)
+        End If
+        
+        KeepCapture()
+        head = get_headline( x1 )
+        If head < 0 
+            Exit While
+        End If
+        say "top = " & head
+        
+        centx = get_centx( head, x1 )
+        If centx < 0 Then 
+            Exit While
+        End If
+        say "centx = " & centx
+        
+        bottom = get_bottomline( centx, head )
+        centy = (head+bottom)/2
+        say "bottom = " & bottom
+    
+        //é­”æ”¹ï¼Œå¦‚æœé‡åˆ°å¹²æ‰°å¯¼è‡´ç›®æ ‡ç‚¹è¿‡äºæ¥è¿‘è¾¹ç•Œï¼Œåˆ™y+20
+        If (centy - head) < 20 Then 
+            say "Too close, y + 50"
+            centy = head + 50
+        End If
+        
+        dist = distance(x1, y1, centx, centy)
+        say "from: " & x1 & ", " & y1 & " to: " & centx & ", " & centy
+        
+        ReleaseCapture()
+        SnapShot ("/sdcard/Pictures/autojump_" & iter Mod 5 & ".png" )
+        lastpress = press (dist)
+    Else
+        Exit While
+    End If
+    
+    Delay 2000
+    
+    TracePrint "Step: " & iter
+    TracePrint ""
+    prevx = x1
+    prevy = y1
 Wend
 
 Function get_headline( body_x )
-	Dim execute
-	Dim cmp
-	Dim color, num
-	Dim xleft, xright, halfx, offset, range
-	halfx = screenX / 2
-	//¿¼ÂÇbodyºÍblock·Ç³£½Ó½üµÄÇé¿ö
-	offset = 30
-	
-	If body_x > halfx Then 
-		xleft = 1
-		xright = halfx - offset
-		//TracePrint "get_headline: from left side"
-	Else 
-		xleft = halfx + offset
-		xright = screenX
-		//TracePrint "get_headline: from right side"
-	End If
-	
-	range = xright - xleft
-	
-	For y = 600 To 1000 Step 10
-		color = GetPixelColor( xleft, y )
-		//say "bgcolor: "& color
-		
-		num = GetColorNum(xleft, y, xright, y, color, 0.95)
-		
-		//Èç¹ûÏàÍ¬ÑÕÉ«µÄÊıÁ¿±ÈÔ¤¼ÆÏñËØÉÙ 6
-		If num < (range - 6) Then
-			get_headline = y
-			
-			//¾«È·É¨Ãè
-			For yy = (y - 10) To y Step 2
-				num = GetColorNum(xleft, yy, xright, yy, color, 0.95)
-				If num < (range - 2) Then
-					get_headline = yy
-					Exit For
-				End If
-			Next
-			Exit For
-		End If
-		
-		//say "Y: " & y & ", Result: " & cmp
-		//Touch 800, y, 100
-		//Delay 100
-	Next
-	
-	If cmp = 1 Then 
-		get_headline = -1
-	End If
+    Dim execute
+    Dim cmp
+    Dim color, num
+    Dim xleft, xright, halfx, offset, range
+    halfx = screenX / 2
+    //è€ƒè™‘bodyå’Œblockéå¸¸æ¥è¿‘çš„æƒ…å†µ
+    offset = 30
+    
+    If body_x > halfx Then 
+        xleft = 1
+        xright = halfx - offset
+        //TracePrint "get_headline: from left side"
+    Else 
+        xleft = halfx + offset
+        xright = screenX
+        //TracePrint "get_headline: from right side"
+    End If
+    
+    range = xright - xleft
+    
+    For y = 600 To 1000 Step 10
+        color = GetPixelColor( xleft, y )
+        //say "bgcolor: "& color
+        
+        num = GetColorNum(xleft, y, xright, y, color, 0.95)
+        
+        //å¦‚æœç›¸åŒé¢œè‰²çš„æ•°é‡æ¯”é¢„è®¡åƒç´ å°‘ 6
+        If num < (range - 6) Then
+            get_headline = y
+            
+            //ç²¾ç¡®æ‰«æ
+            For yy = (y - 10) To y Step 2
+                num = GetColorNum(xleft, yy, xright, yy, color, 0.95)
+                If num < (range - 2) Then
+                    get_headline = yy
+                    Exit For
+                End If
+            Next
+            Exit For
+        End If
+        
+        //say "Y: " & y & ", Result: " & cmp
+        //Touch 800, y, 100
+        //Delay 100
+    Next
+    
+    If cmp = 1 Then 
+        get_headline = -1
+    End If
 End Function
 
 Function get_centx(headline, body_x)
-	Dim color, cmp, num
-	bgcolor = GetPixelColor(5, headline)
-	
-	Dim xleft, xright, halfx, xa, xb
-	halfx = screenX / 2
-	
-	If body_x > halfx Then 
-		xleft = 1
-		xright = halfx
-		//TracePrint "get_cenx: from left side"
-	Else 
-		xleft = halfx + 1
-		xright = screenX
-		//TracePrint "get_cenx: from right side"
-	End If
-	
-	//´óÖÂÇøÓò
-	For x = xleft To xright Step 10
-		num = GetColorNum(x, headline, x + 9, headline, bgcolor, 0.95)
-		If num < 9 Then
-			xleft = x - 5
-			xright = x + 30
-			Exit For
-		End If
-	Next
-	
-	If xleft < 1 Then 
-		xleft = 1
-	End If
-	
-	If xright > screenX Then 
-		xright = screenX
-	End If
-	
-//	say "top " & headline
-//	say "test xleft " & xleft & ", xright:" & xright
-	
-	//¾«Ï¸ËÑË÷
-	get_centx = -1
-	For x = xleft To xright Step 1
-		cmp = CmpColor(x, head, bgcolor, 0.95)
-		//²»Æ¥ÅäÊ±·µ»Ø -1
-		If cmp = -1 Then
-			xa = x
-			Exit For
-		End If
-	Next
-	
-	num = GetColorNum(xleft, headline, xright, headline, bgcolor, 0.95)
-	get_centx = xa + int((xright - xleft + 1 - num) / 2)
-	
+    Dim color, cmp, num
+    bgcolor = GetPixelColor(5, headline)
+    
+    Dim xleft, xright, halfx, xa, xb
+    halfx = screenX / 2
+    
+    If body_x > halfx Then 
+        xleft = 1
+        xright = halfx
+        //TracePrint "get_cenx: from left side"
+    Else 
+        xleft = halfx + 1
+        xright = screenX
+        //TracePrint "get_cenx: from right side"
+    End If
+    
+    //å¤§è‡´åŒºåŸŸ
+    For x = xleft To xright Step 10
+        num = GetColorNum(x, headline, x + 9, headline, bgcolor, 0.95)
+        If num < 9 Then
+            xleft = x - 5
+            xright = x + 30
+            Exit For
+        End If
+    Next
+    
+    If xleft < 1 Then 
+        xleft = 1
+    End If
+    
+    If xright > screenX Then 
+        xright = screenX
+    End If
+    
+//  say "top " & headline
+//  say "test xleft " & xleft & ", xright:" & xright
+    
+    //ç²¾ç»†æœç´¢
+    get_centx = -1
+    For x = xleft To xright Step 1
+        cmp = CmpColor(x, head, bgcolor, 0.95)
+        //ä¸åŒ¹é…æ—¶è¿”å› -1
+        If cmp = -1 Then
+            xa = x
+            Exit For
+        End If
+    Next
+    
+    num = GetColorNum(xleft, headline, xright, headline, bgcolor, 0.95)
+    get_centx = xa + int((xright - xleft + 1 - num) / 2)
+    
 End Function
 
 Function get_bottomline( centx, head )
-	Dim color, cmp, white, leftcmp, leftw, bgwhite
-	color = GetPixelColor(centx, head + 20)
-	bgwhite = CmpColor(centx, head+20, "FFFFFF", 0.95)
-	
-	get_bottomline = -1
-	
-	For y = head+20 to head+500 Step 10
-		cmp     = CmpColor(centx, y, color, 0.95)
-		leftcmp = CmpColor(centx - 20, y, color, 0.95)
-		
-		If cmp = -1 Or leftcmp  = -1 Then 
-			white = CmpColor(centx, y, "FFFFFF", 0.9)
-			leftw = CmpColor(centx - 20, y, "FFFFFF", 0.9)
-			
-			//Èç¹û²»ÊÇ°×É«(·ÇÔ²µã)£¬¾«È··¶Î§
-			If white = -1 Then
-				get_bottomline = y
-				//¾«È·ËÑË÷
-				For yy = (y - 10) To y Step 2
-					cmp = CmpColor(centx, yy, color, 0.95)
-					If cmp = -1 Then 
-						get_bottomline = yy
-						Exit For
-					End If
-				Next
-				//½áÊøÍâ²¿ for
-				Exit For
-			Else 
-				//Èç¹û block Ö÷ÒªÎª°×É«£¬ÇÒÆ«×óµÄÂÖÀª·Ç°×É«£¬Ö±½ÓÅĞ¶¨bottom
-				If bgwhite > -1 And leftw = -1 Then 
-					get_bottomline = y
-					Exit For
-				End If
-			End If
-			
-		End If
-		
-	Next
-	
+    Dim color, cmp, white, leftcmp, leftw, bgwhite
+    color = GetPixelColor(centx, head + 20)
+    bgwhite = CmpColor(centx, head+20, "FFFFFF", 0.95)
+    
+    get_bottomline = -1
+    
+    For y = head+20 to head+500 Step 10
+        cmp     = CmpColor(centx, y, color, 0.95)
+        leftcmp = CmpColor(centx - 20, y, color, 0.95)
+        
+        If cmp = -1 Or leftcmp  = -1 Then 
+            white = CmpColor(centx, y, "FFFFFF", 0.9)
+            leftw = CmpColor(centx - 20, y, "FFFFFF", 0.9)
+            
+            //å¦‚æœä¸æ˜¯ç™½è‰²(éåœ†ç‚¹)ï¼Œç²¾ç¡®èŒƒå›´
+            If white = -1 Then
+                get_bottomline = y
+                //ç²¾ç¡®æœç´¢
+                For yy = (y - 10) To y Step 2
+                    cmp = CmpColor(centx, yy, color, 0.95)
+                    If cmp = -1 Then 
+                        get_bottomline = yy
+                        Exit For
+                    End If
+                Next
+                //ç»“æŸå¤–éƒ¨ for
+                Exit For
+            Else 
+                //å¦‚æœ block ä¸»è¦ä¸ºç™½è‰²ï¼Œä¸”åå·¦çš„è½®å»“éç™½è‰²ï¼Œç›´æ¥åˆ¤å®šbottom
+                If bgwhite > -1 And leftw = -1 Then 
+                    get_bottomline = y
+                    Exit For
+                End If
+            End If
+            
+        End If
+        
+    Next
+    
 End Function
 
 Function check_bgcolor_change(bgcolor)
-	check_bgcolor_change = 0
-	While (CmpColor(100, 360, bgcolor, 0.98) = -1)
-		say "Color changed"
-		Delay 3000
-		check_bgcolor_change = 1
-		Exit While
-	Wend
+    check_bgcolor_change = 0
+    While (CmpColor(100, 360, bgcolor, 0.98) = -1)
+        say "Color changed"
+        Delay 3000
+        check_bgcolor_change = 1
+        Exit While
+    Wend
 End Function
 
 Function findbody()
@@ -255,17 +242,17 @@ Function findbody()
             y1 = y1 + 30
             result = 1
         End If
-		
+        
         If times >= 30 Then 
             result = 0
         End If
-		
+        
         times = times+1
         Delay 300
         say "find pic again, times: " & times
     Wend
     findbody = result
-	
+    
 End Function
 
 Function press(delta)
@@ -278,7 +265,7 @@ Function press(delta)
 End Function
 
 Function distance(x1, y1, x2, y2)
-	distance = sqr( (x1-x2)^2 + (y1-y2)^2 )
+    distance = sqr( (x1-x2)^2 + (y1-y2)^2 )
 End Function
 
 Function OnScriptExit()
